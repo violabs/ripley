@@ -39,7 +39,14 @@ kotlin {
 
     
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-common"))
+                // https://mvnrepository.com/artifact/io.github.microutils/kotlin-logging
+                implementation("io.github.microutils:kotlin-logging:4.0.0-beta-2")
+
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
