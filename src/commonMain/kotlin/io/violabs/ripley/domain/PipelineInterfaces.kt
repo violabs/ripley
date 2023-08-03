@@ -1,6 +1,7 @@
 package io.violabs.ripley.domain
 
 import io.violabs.ripley.pipeline.ModelKwargs
+import kotlin.reflect.KClass
 
 interface IPipeline
 
@@ -63,4 +64,15 @@ interface IFlaxModel : IPreTrainedModel
 
 interface ITorchDevice {
     val name: String?
+}
+
+interface IFrameworkModelInferenceEngine {
+    fun <T : IPreTrainedModel> inferFrameworkLoadModel(
+        clazz: KClass<T>,
+        model: Any,
+        modelClasses: Map<FrameworkName, () -> T>? = null,
+        task: String? = null,
+        framework: FrameworkName? = null,
+        modelKwargs: ModelKwargs = ModelKwargs()
+    ): Pair<FrameworkName, T>
 }

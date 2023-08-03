@@ -1,26 +1,29 @@
 package io.violabs.ripley.pipeline
 
 import io.violabs.ripley.domain.*
+import kotlin.reflect.KClass
+import kotlin.reflect.cast
 
 class FrameworkModelInferenceEngine(
     private val tensorFlowConfig: ITensorFlowConfig,
     private val pyTorchConfig: IPyTorchConfig,
 ) {
-    inline fun <reified T : IPreTrainedModel> inferFrameworkLoadModel(
+    fun <T : IPreTrainedModel> inferFrameworkLoadModel(
+        clazz: KClass<T>,
         model: Any,
         modelClasses: Map<FrameworkName, () -> T>? = null,
         task: String? = null,
         framework: FrameworkName? = null,
         modelKwargs: ModelKwargs = ModelKwargs()
     ): Pair<FrameworkName, T> {
-        return when (model) {
-            is String -> inferFrameworkLoadModelByName(model, modelClasses, task, framework, modelKwargs)
-            is T -> inferFrameworkWithModel<T>(model, framework)
+        return when {
+            model is String -> inferFrameworkLoadModelByName(clazz, model, modelClasses, task, framework, modelKwargs)
+            clazz.isInstance(model) -> inferFrameworkWithModel(clazz.cast(model), framework)
             else -> throw Exception("Cannot infer framework from $model")
         }
     }
 
-    inline fun <reified T : IPreTrainedModel> inferFrameworkWithModel(
+    private fun <T : IPreTrainedModel> inferFrameworkWithModel(
         model: T,
         framework: FrameworkName? = null
     ): Pair<FrameworkName, T> {
@@ -31,7 +34,8 @@ class FrameworkModelInferenceEngine(
         return Pair(foundFramework, model)
     }
 
-    inline fun <reified T : IPreTrainedModel> inferFrameworkLoadModelByName(
+    private fun <T : IPreTrainedModel> inferFrameworkLoadModelByName(
+        clazz: KClass<T>,
         model: String,
         modelClassBuilders: Map<FrameworkName, () -> T>? = null,
         task: String? = null,
@@ -54,8 +58,8 @@ class FrameworkModelInferenceEngine(
                 .fromPretrained(model, newKwargs)
                 .eval()
                 .let {
-                    if (it is T) { it }
-                    else { throw Exception("Cannot cast $it to ${T::class}") }
+                    if (clazz.isInstance(it)) { clazz.cast(it) }
+                    else { throw Exception("Cannot cast $it to $clazz") }
                 }
         } catch (e: Exception) {
             PipelineBuilder.LOGGER.error(e.message)
@@ -67,7 +71,7 @@ class FrameworkModelInferenceEngine(
         return Pair(foundFramework, determinedModel)
     }
 
-    fun <T : IPreTrainedModel> determineModelClass(
+    private fun <T : IPreTrainedModel> determineModelClass(
         model: String,
         modelClassBuilders: Map<FrameworkName, () -> T>? = null,
         framework: FrameworkName? = null
@@ -83,14 +87,14 @@ class FrameworkModelInferenceEngine(
         return modelClassBuilder?.invoke() ?: throw Exception("Cannot infer suitable model classes from $model")
     }
 
-    fun <T : IPreTrainedModel> inferFramework(modelClass: T) = when (modelClass) {
+    private fun <T : IPreTrainedModel> inferFramework(modelClass: T) = when (modelClass) {
         is IPyTorchModel -> FrameworkName.PYTORCH
         is ITensorFlowModel -> FrameworkName.TENSORFLOW
         is IFlaxModel -> FrameworkName.FLAX
         else -> throw Exception("Cannot infer framework from $modelClass")
     }
 
-    fun requireActiveFramework() {
+    private fun requireActiveFramework() {
         if (!tensorFlowConfig.isTfAvailable && !pyTorchConfig.isTorchAvailable) {
             throw Exception(
                 """

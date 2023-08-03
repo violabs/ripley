@@ -3,17 +3,19 @@ package io.violabs.ripley.pipeline
 import io.violabs.ripley.common.iff
 import io.violabs.ripley.domain.*
 import mu.two.KotlinLogging
+import kotlin.reflect.KClass
 
 class PipelineBuilder(
-    val frameworkModelInferenceEngine: FrameworkModelInferenceEngine,
-    val tensorFlowConfig: ITensorFlowConfig,
+    private val frameworkModelInferenceEngine: IFrameworkModelInferenceEngine,
+    private val tensorFlowConfig: ITensorFlowConfig,
 ) {
 
     fun build(): IPipeline {
         return object : IPipeline {}
     }
 
-    inline fun <reified T> buildRefactor(
+    fun <T> buildRefactor(
+        clazz: KClass<T>,
         inputModel: T,
         inputDevice: IDevice? = null,
         task: String = "",
@@ -25,7 +27,7 @@ class PipelineBuilder(
         binaryOutput: Boolean = false,
         modelKwargs: ModelKwargs? = null
     ): Pipeline<T> where T : AvailableModel, T : IPreTrainedModel {
-        val (framework, model) = frameworkModelInferenceEngine.inferFrameworkLoadModel<T>(inputModel)
+        val (framework, model) = frameworkModelInferenceEngine.inferFrameworkLoadModel(clazz, inputModel)
 
         var foundDevice: IDevice = inputDevice ?: model.hfDeviceMap?.values?.firstOrNull() ?: Device.Default
 
