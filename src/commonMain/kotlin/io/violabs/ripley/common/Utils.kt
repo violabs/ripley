@@ -45,18 +45,26 @@ inline fun <reified T> Any?.parseAsMatrix(): Matrix<T> {
 }
 
 @JvmInline
-value class IfElse(private val previousEval: Boolean) {
-    fun or(condition: Boolean): IfElse = IfElse(previousEval || condition)
+value class IfElse(private val previousEvalPredicate: () -> Boolean) {
 
-    fun and(condition: Boolean): IfElse = IfElse(previousEval && condition)
+    fun or(predicate: () -> Boolean): IfElse = IfElse {
+        previousEvalPredicate() || predicate()
+    }
+
+    fun and(predicate: () -> Boolean): IfElse = IfElse {
+        previousEvalPredicate() && predicate()
+    }
 
     fun then(block: () -> Unit) {
-        if (previousEval) {
+        if (previousEvalPredicate()) {
             block()
         }
     }
+
+    fun <T> thenReturn(ifReturn: T, elseReturn: T): T =
+        ifReturn
+            .takeIf { previousEvalPredicate() }
+            ?: elseReturn
 }
 
-fun iff(condition: Boolean): IfElse {
-    return IfElse(condition)
-}
+fun iff(condition:  Boolean): IfElse = IfElse { condition }

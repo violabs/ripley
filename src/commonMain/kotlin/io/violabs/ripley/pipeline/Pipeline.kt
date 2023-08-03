@@ -10,6 +10,8 @@ data class ModelKwargs(
     var fromPipeline: String? = null,
     var fromTensorFlow: Boolean = false,
     var fromPyTorch: Boolean = false,
+    val batchSize: Int? = null,
+    val numberOfWorkers: Int? = null
 )
 
 class HubKwargs(
@@ -30,15 +32,12 @@ class Pipeline<T>(
     val device: IDevice? = null,
     val torchDataType: ITorchDataType? = null,
     val binaryOutput: Boolean = false,
+    val kwargs: ModelKwargs? = null
 ) : IScikitCompatible where T : AvailableModel, T : IPreTrainedModel {
     var defaultInputNames: String? = null
-
-    init {
-        iff(framework != FrameworkName.PYTORCH)
-            .or(device == null)
-            .or(device!!.num != null && device.num!! >= 0)
-            .then { model.to(device) }
-    }
+    var callCount: Int = 0
+    val batchSize: Int? = null
+    val numberOfWorkers: Int? = null
 
     override fun transform(x: Any?) {
         TODO("Not yet implemented")
