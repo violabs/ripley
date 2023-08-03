@@ -43,3 +43,20 @@ inline fun <reified T> Any?.parseAsMatrix(): Matrix<T> {
         valueTypeList
     }
 }
+
+@JvmInline
+value class IfElse(private val previousEval: Boolean) {
+    fun or(condition: Boolean): IfElse = IfElse(previousEval || condition)
+
+    fun and(condition: Boolean): IfElse = IfElse(previousEval && condition)
+
+    fun then(block: () -> Unit) {
+        if (previousEval) {
+            block()
+        }
+    }
+}
+
+fun iff(condition: Boolean): IfElse {
+    return IfElse(condition)
+}
