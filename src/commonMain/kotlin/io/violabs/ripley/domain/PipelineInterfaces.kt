@@ -76,3 +76,21 @@ interface IFrameworkModelInferenceEngine {
         modelKwargs: ModelKwargs = ModelKwargs()
     ): Pair<FrameworkName, T>
 }
+
+interface IFrameworkInferenceEngine {
+    fun <T : IPreTrainedModel> inferFramework(model: T, framework: FrameworkName? = null): FrameworkName
+}
+
+interface IModelInferenceEngine {
+    fun <T : IPreTrainedModel> inferModel(
+        clazz: KClass<T>,
+        model: String,
+        modelClassBuilders: Map<FrameworkName, () -> T>? = null,
+        framework: FrameworkName? = null,
+        modelKwargs: ModelKwargs
+    ): T
+}
+
+interface IFrameworkValidator {
+    fun requireActiveFramework()
+}
