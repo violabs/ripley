@@ -25,7 +25,8 @@ open class FakeModel : IPreTrainedModel {
 open class FakePyTorchModel : IPyTorchModel {
     var model: String? = null
     var modelKwargs: ModelKwargs? = null
-    var evaluated: Boolean = false
+    private var evaluated: Boolean = false
+    override var hfDeviceMap: Map<String, IDevice>? = null
     override val config: IPreTrainedConfig?
         get() = TODO("Not yet implemented")
     override val generationConfig: IGenerationConfig?
@@ -46,10 +47,7 @@ open class FakePyTorchModel : IPyTorchModel {
         TODO("Not yet implemented")
     }
 
-    override val hfDeviceMap: Map<String, IDevice>?
-        get() = TODO("Not yet implemented")
-
-    override fun to(device: IDevice) {
+    override fun addDevice(device: IDevice?) {
         TODO("Not yet implemented")
     }
 }
@@ -57,7 +55,9 @@ open class FakePyTorchModel : IPyTorchModel {
 open class FakeTensorFlowModel : ITensorFlowModel {
     var model: String? = null
     var modelKwargs: ModelKwargs? = null
-    var evaluated: Boolean = false
+    private var evaluated: Boolean = false
+    override var hfDeviceMap: Map<String, IDevice>? = null
+
     override val config: IPreTrainedConfig?
         get() = TODO("Not yet implemented")
     override val generationConfig: IGenerationConfig?
@@ -78,10 +78,7 @@ open class FakeTensorFlowModel : ITensorFlowModel {
         TODO("Not yet implemented")
     }
 
-    override val hfDeviceMap: Map<String, IDevice>?
-        get() = TODO("Not yet implemented")
-
-    override fun to(device: IDevice) {
+    override fun addDevice(device: IDevice?) {
         TODO("Not yet implemented")
     }
 }

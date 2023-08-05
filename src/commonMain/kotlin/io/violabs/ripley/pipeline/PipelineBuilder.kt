@@ -6,6 +6,7 @@ import mu.two.KotlinLogging
 import kotlin.reflect.KClass
 
 class PipelineBuilder(
+    private val deviceInferenceService: DeviceInferenceService,
     private val frameworkModelInferenceEngine: IFrameworkModelInferenceEngine,
     private val tensorFlowConfig: ITensorFlowConfig,
 ) {
@@ -29,20 +30,13 @@ class PipelineBuilder(
     ): Pipeline<T> where T : AvailableModel, T : IPreTrainedModel {
         val (framework, model) = frameworkModelInferenceEngine.inferFrameworkLoadModel(clazz, inputModel)
 
-        var foundDevice: IDevice = inputDevice ?: model.hfDeviceMap?.values?.firstOrNull() ?: Device.Default
+        val foundDevice: IDevice? = deviceInferenceService.inferDevice(framework, model, inputDevice)
 
-        iff(framework != FrameworkName.PYTORCH)
-            .or { inputDevice == null }
-            .or { inputDevice!!.num != null && inputDevice.num!! >= 0 }
-            .then { model.to(inputDevice) }
+        deviceInferenceService
+            .inferDeviceBelongsInModel(framework, inputDevice)
+            ?.also { model.addDevice(inputDevice) }
 
-        if (tensorFlowConfig.isTfAvailable && framework == FrameworkName.PYTORCH) {
-            foundDevice = if (foundDevice is ITorchDevice) foundDevice
-                     else if (foundDevice.name?.isNotBlank() == true) TorchDevice(foundDevice)
-                     else if (foundDevice.num != null && foundDevice.num!! < 0) TorchDevice("cpu")
-                        else TorchDevice("cuda:${foundDevice.num}")
-        }
-
+        // todo maybe move this out into model configuration?
         model
             .config
             ?.taskSpecificParams

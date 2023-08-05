@@ -44,8 +44,8 @@ interface IScikitCompatible {
 interface IAutoConfig
 
 interface AvailableModel {
-    val hfDeviceMap: Map<String, IDevice>?
-    fun to(device: IDevice)
+    var hfDeviceMap: Map<String, IDevice>?
+    fun addDevice(device: IDevice?)
 }
 
 interface ITensorFlowConfig {
@@ -93,4 +93,9 @@ interface IModelInferenceEngine {
 
 interface IFrameworkValidator {
     fun requireActiveFramework()
+}
+
+interface IDeviceInferenceService {
+    fun inferDeviceBelongsInModel(framework: FrameworkName, inputDevice: IDevice?): IDevice?
+    fun <T : AvailableModel> inferDevice(framework: FrameworkName, model: T, inputDevice: IDevice?): IDevice?
 }

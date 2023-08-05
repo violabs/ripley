@@ -36,6 +36,7 @@ kotlin {
                 implementation(kotlin("stdlib-common"))
                 implementation("io.github.microutils:kotlin-logging:4.0.0-beta-2")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+                implementation(kotlin("reflect"))
             }
         }
         val commonTest by getting {

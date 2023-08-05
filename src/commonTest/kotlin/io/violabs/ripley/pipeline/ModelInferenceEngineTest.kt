@@ -1,6 +1,7 @@
 package io.violabs.ripley.pipeline
 
 import io.violabs.ripley.domain.FrameworkName
+import io.violabs.ripley.domain.IDevice
 import io.violabs.ripley.domain.IPreTrainedModel
 import io.violabs.ripley.testSuite.*
 import org.junit.jupiter.api.Test
@@ -57,6 +58,10 @@ class ModelInferenceEngineTest {
             val extended = object : FakePyTorchModel() {
                 override fun fromPretrained(model: String, modelKwargs: ModelKwargs): IPreTrainedModel {
                     return FakeFlaxModel()
+                }
+
+                override fun addDevice(device: IDevice?) {
+                    TODO("Not yet implemented")
                 }
             }
 
@@ -119,6 +124,10 @@ class ModelInferenceEngineTest {
             val extended = object : FakeTensorFlowModel() {
                 override fun fromPretrained(model: String, modelKwargs: ModelKwargs): IPreTrainedModel {
                     return FakeFlaxModel()
+                }
+
+                override fun addDevice(device: IDevice?) {
+                    TODO("Not yet implemented")
                 }
             }
 
@@ -209,6 +218,10 @@ class ModelInferenceEngineTest {
             val extended = object : FakePyTorchModel() {
                 override fun fromPretrained(model: String, modelKwargs: ModelKwargs): IPreTrainedModel {
                     return FakeFlaxModel()
+                }
+
+                override fun addDevice(device: IDevice?) {
+                    TODO("Not yet implemented")
                 }
             }
 
@@ -316,6 +329,10 @@ class ModelInferenceEngineTest {
             val extended = object : FakeTensorFlowModel() {
                 override fun fromPretrained(model: String, modelKwargs: ModelKwargs): IPreTrainedModel {
                     return FakeFlaxModel()
+                }
+
+                override fun addDevice(device: IDevice?) {
+                    TODO("Not yet implemented")
                 }
             }
 

@@ -67,10 +67,12 @@ value class IfElse(private val previousEvalPredicate: () -> Boolean) {
         }
     }
 
-    fun <T> thenReturn(ifReturn: T, elseReturn: T): T =
-        ifReturn
-            .takeIf { previousEvalPredicate() }
-            ?: elseReturn
+    fun <T> thenReturn(ifReturn: T, elseReturn: T): T = if (previousEvalPredicate()) ifReturn else elseReturn
+
+    fun spy(message: String): IfElse {
+        println("$message: ${previousEvalPredicate()}")
+        return this
+    }
 }
 
-fun iff(condition:  Boolean): IfElse = IfElse { condition }
+fun iff(condition: Boolean): IfElse = IfElse { condition }
