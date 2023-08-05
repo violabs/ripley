@@ -1,12 +1,13 @@
 package io.violabs.ripley.pipeline
 
+import io.violabs.ripley.common.safe
 import io.violabs.ripley.domain.*
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
 class FrameworkModelInferenceEngine(
     private val frameworkInferenceEngine: IFrameworkInferenceEngine,
-    private val frameworkValidator: FrameworkValidator,
+    private val frameworkValidator: IFrameworkValidator,
     private val modelInferenceEngine: IModelInferenceEngine,
 ) : IFrameworkModelInferenceEngine {
     override fun <T : IPreTrainedModel> inferFrameworkLoadModel(
@@ -18,7 +19,7 @@ class FrameworkModelInferenceEngine(
         modelKwargs: ModelKwargs
     ): Pair<FrameworkName, T> {
         return when {
-            model is String -> inferFrameworkLoadModelByName(clazz, model, modelClasses, task, framework, modelKwargs)
+            model is String -> inferFrameworkLoadModelByName(clazz, model, modelClasses, task.safe, framework, modelKwargs)
             clazz.isInstance(model) -> inferFrameworkWithModel(clazz.cast(model), framework)
             else -> throw Exception("Cannot infer framework from $model")
         }
@@ -39,7 +40,7 @@ class FrameworkModelInferenceEngine(
         clazz: KClass<T>,
         model: String,
         modelClassBuilders: Map<FrameworkName, () -> T>? = null,
-        task: String? = null,
+        task: String = "",
         framework: FrameworkName? = null,
         modelKwargs: ModelKwargs = ModelKwargs()
     ): Pair<FrameworkName, T> {

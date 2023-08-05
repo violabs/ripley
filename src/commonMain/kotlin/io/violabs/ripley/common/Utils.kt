@@ -1,5 +1,11 @@
 package io.violabs.ripley.common
 
+val String?.safe: String
+    get() = this ?: ""
+
+val Int?.safe: Int
+    get() = this ?: 0
+
 inline fun <reified T> Any?.parseAsList(): List<T> {
     if (this !is List<*>) return emptyList()
 
