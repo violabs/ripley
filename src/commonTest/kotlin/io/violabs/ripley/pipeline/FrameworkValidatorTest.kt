@@ -1,14 +1,13 @@
 package io.violabs.ripley.pipeline
 
-import io.violabs.ripley.domain.IPyTorchConfig
-import io.violabs.ripley.domain.ITensorFlowConfig
+import io.violabs.ripley.testSuite.FakePyTorchConfig
+import io.violabs.ripley.testSuite.FakeTensorFlowConfig
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertTrue
 
 class FrameworkValidatorTest {
-    data class FakeTensorFlowConfig(override val isTfAvailable: Boolean = false) : ITensorFlowConfig
-    data class FakePyTorchConfig(override val isTorchAvailable: Boolean = false) : IPyTorchConfig
+
 
     @Test
     fun requireActiveFramework_will_throw_exception_if_neither_are_available() {
