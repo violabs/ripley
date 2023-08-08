@@ -6,3 +6,9 @@ enum class FrameworkName {
     FLAX,
     UNKNOWN
 }
+
+enum class LibraryName {
+    TRANSFORMERS,
+    TOKENIZERS,
+    UNKNOWN
+}

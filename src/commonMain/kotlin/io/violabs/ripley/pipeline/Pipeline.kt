@@ -1,6 +1,5 @@
 package io.violabs.ripley.pipeline
 
-import io.violabs.ripley.common.iff
 import io.violabs.ripley.domain.*
 import mu.two.KotlinLogging
 
@@ -11,13 +10,15 @@ data class ModelKwargs(
     var fromTensorFlow: Boolean = false,
     var fromPyTorch: Boolean = false,
     val batchSize: Int? = null,
-    val numberOfWorkers: Int? = null
+    val numberOfWorkers: Int? = null,
+    var deviceMap: Any? = null,
+    var torchDatatype: ITorchDataType? = null
 )
 
 class HubKwargs(
     val revision: String? = null,
-    val token: String? = null,
-    val trustRemoteCode: Boolean = false,
+    val token: IToken? = null,
+    val trustRemoteCode: Boolean? = false,
     val commitHash: String? = null,
 )
 
